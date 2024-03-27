@@ -1,30 +1,42 @@
 {
-  description = "Foo Bar Rust Project";
-
-  nixConfig = {
-    extra-substituters = [ "https://cache.m7.rs" ];
-    extra-trusted-public-keys = [ "cache.m7.rs:kszZ/NSwE/TjhOcPPQ16IuUiuRSisdiIwhKZCxguaWg=" ];
-  };
+  description = "A devShell example";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    flake-utils.url  = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs }:
-    let
-      forAllSystems = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-linux" ];
-      pkgsFor = nixpkgs.legacyPackages;
-    in
-    rec {
-      # packages = forAllSystems (system: {
-      #   default = pkgsFor.${system}.callPackage ./default.nix { };
-      # });
+  outputs = { self, nixpkgs, rust-overlay, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        overlays = [ (import rust-overlay) ];
+        pkgs = import nixpkgs {
+          inherit system overlays;
+        };
+      in
+      with pkgs;
+      {
+        devShells.default = mkShell {
+          buildInputs = [
+            openssl
+            pkg-config
+            eza
+            fd
+            rust-bin.stable.latest.default
+            rust-analyzer
+            rustfmt
+            clippy
+          ];
 
-      devShells = forAllSystems (system: {
-        default = pkgsFor.${system}.callPackage ./shell.nix { };
-      });
-
-      # hydraJobs = packages;
-    };
+          shellHook = ''
+            alias ls='eza -lah'
+            alias find=fd
+            alias cn='cargo new'
+            alias cr='cargo run'
+          '';
+        };
+      }
+    );
 }
 
