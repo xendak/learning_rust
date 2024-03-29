@@ -3,7 +3,7 @@ use std::io ;
 #[derive(Debug)]
 enum TemperatureReading {
     Celsius,
-    Fahrenheight,
+    Fahrenheit,
     Kelvin,
 }
 
@@ -23,9 +23,9 @@ impl Temperature {
     fn display_all(&self) {
         let mut c = Self::new(0.0, TemperatureReading::Celsius);
         let mut k = Self::new(0.0, TemperatureReading::Kelvin);
-        let mut f = Self::new(0.0, TemperatureReading::Fahrenheight);
+        let mut f = Self::new(0.0, TemperatureReading::Fahrenheit);
         match self.sys {
-            TemperatureReading::Fahrenheight => {
+            TemperatureReading::Fahrenheit => {
                 k = Self::f_to_k(&self);
                 c = Self::f_to_c(&self);
             }
@@ -39,14 +39,14 @@ impl Temperature {
             }
         };
         println!("Kelvin = {}K", k.degree);
-        println!("Fahrenheight = {}F", f.degree);
+        println!("Fahrenheit = {}F", f.degree);
         println!("Celsius = {}C", c.degree);
     }
 
     fn c_to_f(&self) -> Temperature {
         Temperature {
             degree: (self.degree * (9.0/5.0)) + 32.0,
-            sys: TemperatureReading::Fahrenheight,
+            sys: TemperatureReading::Fahrenheit,
         }
     }
     fn f_to_c(&self) -> Temperature {
@@ -71,7 +71,7 @@ impl Temperature {
     fn k_to_f(&self) -> Temperature {
        Temperature { 
            degree: Self::c_to_f(&Self::k_to_c(&self)).degree,
-           sys: TemperatureReading::Fahrenheight,
+           sys: TemperatureReading::Fahrenheit,
        }
     }
     fn f_to_k(&self) -> Temperature {
@@ -84,7 +84,7 @@ impl Temperature {
 
 fn get_input() -> Temperature {
     loop {
-        println!("Accepted systems are in the Celsius, Fahrenheight, Kelvin");
+        println!("Accepted systems are in the Celsius, Fahrenheit, Kelvin");
         println!("Please input a number followed by a temperature system.");
 
         let mut input = String::new();
@@ -99,7 +99,7 @@ fn get_input() -> Temperature {
                 sys = match item {
                     'c' | 'C' => Some(TemperatureReading::Celsius),
                     'k' | 'K' => Some(TemperatureReading::Kelvin),
-                    'f' | 'F' => Some(TemperatureReading::Fahrenheight),
+                    'f' | 'F' => Some(TemperatureReading::Fahrenheit),
                     _ => continue,
                 };
                 
