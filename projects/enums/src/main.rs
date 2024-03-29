@@ -102,10 +102,10 @@ fn get_input() -> Temperature {
                     'f' | 'F' => Some(TemperatureReading::Fahrenheight),
                     _ => continue,
                 };
-                temp = match input[..i].trim().parse() {
-                    Ok(num) => Some(num),
-                    Err(_) => continue
-                };
+                
+                if let Ok(num) = input[..i].trim().parse() {
+                    temp = Some(num);
+                } else { continue; };
                 return Temperature::new(temp.expect("Need a valid number"), sys.expect("Needed a valid temperature"))
             }
         }
